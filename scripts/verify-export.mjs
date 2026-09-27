@@ -3,6 +3,10 @@
  * scripts/static-server.mjs) to prove the site works with no Next.js server.
  *
  * Usage: node scripts/verify-export.mjs [baseUrl]
+ *
+ * With no argument it serves out/ locally and tests http://localhost:4173.
+ * Pass a deployed URL to verify a live build, e.g.
+ *   node scripts/verify-export.mjs https://egomonk.vercel.app
  */
 import { chromium } from "playwright";
 import { spawn } from "node:child_process";
@@ -10,6 +14,9 @@ import { setTimeout as sleep } from "node:timers/promises";
 
 const PORT = 4173;
 const BASE = process.argv[2] || `http://localhost:${PORT}`;
+// Only boot a local static server when we are actually testing localhost;
+// against a deployed URL we must not serve a stale local build instead.
+const IS_LOCAL = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(BASE);
 
 const results = [];
 const check = (name, pass, detail = "") => {
@@ -33,12 +40,14 @@ async function waitForServer(url, timeoutMs = 20000) {
 
 let server;
 (async () => {
-  server = spawn(process.execPath, ["scripts/static-server.mjs", String(PORT)], {
-    stdio: "ignore",
-  });
+  if (IS_LOCAL) {
+    server = spawn(process.execPath, ["scripts/static-server.mjs", String(PORT)], {
+      stdio: "ignore",
+    });
+  }
 
   if (!(await waitForServer(BASE))) {
-    console.error("static server did not start");
+    console.error(IS_LOCAL ? "static server did not start" : `no response from ${BASE}`);
     process.exit(1);
   }
 
@@ -158,7 +167,7 @@ let server;
   if (failed.length) {
     console.log("  failed: " + failed.map((f) => f.name).join(", "));
   }
-  server.kill();
+  server?.kill();
   process.exit(failed.length ? 1 : 0);
 })().catch((e) => {
   console.error("FAIL:", e);

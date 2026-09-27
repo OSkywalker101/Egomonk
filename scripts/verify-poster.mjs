@@ -6,6 +6,10 @@
  * on the reveal and then hands over to the live WebGL coin.
  *
  * Usage: node scripts/verify-poster.mjs [baseUrl]
+ *
+ * With no argument it serves out/ locally and tests http://localhost:4174.
+ * Pass a deployed URL to verify a live build, e.g.
+ *   node scripts/verify-poster.mjs https://egomonk.vercel.app
  */
 import { chromium } from "playwright";
 import { spawn } from "node:child_process";
@@ -13,6 +17,9 @@ import { setTimeout as sleep } from "node:timers/promises";
 
 const PORT = 4174;
 const BASE = process.argv[2] || `http://localhost:${PORT}`;
+// Only boot a local static server when we are actually testing localhost;
+// against a deployed URL we must not serve a stale local build instead.
+const IS_LOCAL = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(BASE);
 
 const results = [];
 const check = (name, pass, detail = "") => {
@@ -36,12 +43,14 @@ async function waitForServer(url, timeoutMs = 20000) {
 
 let server;
 (async () => {
-  server = spawn(process.execPath, ["scripts/static-server.mjs", String(PORT)], {
-    stdio: "ignore",
-  });
+  if (IS_LOCAL) {
+    server = spawn(process.execPath, ["scripts/static-server.mjs", String(PORT)], {
+      stdio: "ignore",
+    });
+  }
 
   if (!(await waitForServer(BASE))) {
-    console.error("static server did not start");
+    console.error(IS_LOCAL ? "static server did not start" : `no response from ${BASE}`);
     process.exit(1);
   }
 
@@ -145,7 +154,7 @@ let server;
   check("no console/page errors", errors.length === 0, errors.slice(0, 3).join("; "));
 
   await browser.close();
-  server.kill();
+  server?.kill();
 
   const passed = results.filter((r) => r.pass).length;
   console.log(`\n  ${passed}/${results.length} checks passed\n`);
