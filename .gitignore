@@ -1,0 +1,15 @@
+# This repository is intentionally README-only for now ("ignore everything
+# else"). Delete these lines to start tracking the project.
+*
+!.gitignore
+!README.md
+
+# Note for later: the application lives in instinct-series/ and already has its
+# own git history. It is ignored here on purpose. If you later want the app
+# published from this repository, remove the block above and then either move
+# instinct-series/* up to the root, or delete instinct-series/.git so its files
+# become ordinary tracked files here.
+#
+# Do not just drop the ignore and `git add .` while instinct-series/.git still
+# exists: git will record it as an embedded repository (a gitlink) and upload
+# a broken reference instead of the source.
