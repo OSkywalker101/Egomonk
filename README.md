@@ -8,11 +8,14 @@ artefacts.
 The whole thing runs in the browser. There is no backend, no database, and no paid
 service. It builds to a folder of plain files that can be hosted for free.
 
+**Live:** <https://egomonk.vercel.app>
+
 ---
 
 ## Requirements
 
-- Node.js 20 or newer
+- Node.js 20.9 or newer. This is declared as `engines.node` in `package.json`, so a host
+  that defaults to an older runtime will refuse the install rather than failing mid-build.
 
 ## Commands
 
@@ -27,6 +30,16 @@ service. It builds to a folder of plain files that can be hosted for free.
 
 `npm start` also exists, but note it will not work: this project uses a static export,
 so there is no Next.js server to start. Use `npm run preview` to view a build.
+
+Both verify scripts take an optional base URL, so the same checks can be pointed at a live
+deployment instead of a local build:
+
+```bash
+node scripts/verify-export.mjs https://egomonk.vercel.app
+node scripts/verify-poster.mjs https://egomonk.vercel.app
+```
+
+Given a URL they skip the local static server entirely and test only what the host serves.
 
 ---
 
@@ -46,9 +59,17 @@ host. All of these have a free tier that is sufficient for this site.
 2. Build command: `npm run build`. Publish directory: `out`.
 3. Deploy.
 
-**Vercel**
-1. Import the repository. The defaults are already correct.
-2. Deploy.
+**Vercel** (currently hosting this site)
+1. Import the repository, branch `main`.
+2. Set **Application Preset** to **Next.js**. Vercel can pre-select *Other* if it probed
+   the repository before the source was pushed, and *Other* skips the Next.js pipeline:
+   `next build` does not run the way the framework expects and the `out/` export is not
+   detected. Nothing else needs configuring — Vercel reads `output: "export"` from
+   `next.config.ts` and serves `out/`.
+3. Deploy.
+
+Vercel's free Hobby plan is restricted to non-commercial use, which does not cover a
+client deliverable. For commercial work use a paid Vercel plan, or Cloudflare Pages.
 
 **GitHub Pages**
 1. Push the folder to a repository and enable Pages.
@@ -142,6 +163,12 @@ only final at that point.
 export from 3.26 MB to 6.56 MB. Since it lands on the reveal, keep posters as small as
 the look allows.
 
+A static host serves it with `Cache-Control: max-age=0, must-revalidate`, so the poster is
+revalidated on every load. That is survivable at 3.29 MB thanks to the ETag, but it is one
+more reason to compress. If you do add long-lived cache headers for `/media/*`, remember
+these filenames are not content-hashed, so a replaced poster would otherwise be served
+from cache for the entire `max-age`.
+
 ---
 
 ## Testing
@@ -159,3 +186,8 @@ Unicorn, so it does not exercise the poster.
 The build must be able to download Google Fonts, because `src/app/layout.tsx` uses
 `next/font/google`. The first build needs network access; the exported result is fully
 self-contained afterwards.
+
+Both scripts accept a deployed URL, as shown in [Commands](#commands). Against the live
+Vercel deployment they currently report 15/15 and 9/9 with no console or network errors,
+so the static export, WebGL context, QR, downloads, and the poster handoff are all
+confirmed in production rather than only against a local build.
