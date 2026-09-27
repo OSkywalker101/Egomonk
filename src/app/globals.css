@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+:root {
+  --background: #000000;
+  --foreground: #f4f4f4;
+  --accent-blue: #0044ff;
+  --accent-cyan: #00e5ff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent-blue);
+  --color-accent-cyan: var(--accent-cyan);
+  --color-silver: #c8cdd4;
+  --font-sans: var(--font-jbmono);
+  --font-mono: var(--font-jbmono);
+  --font-serif: var(--font-pdisplay);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-jbmono);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: #00e5ff;
+  color: #000;
+}
+
+/* Subtle LED dot-matrix grid overlay */
+.scanline-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 4px 4px;
+  animation: grid-shift 12s linear infinite;
+}
+
+.scanline-sweep {
+  pointer-events: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 120px;
+  z-index: 51;
+  opacity: 0.06;
+  background: linear-gradient(to bottom, transparent, #00e5ff, transparent);
+  animation: sweep 9s linear infinite;
+}
+
+@keyframes grid-shift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 48px;
+  }
+}
+
+@keyframes sweep {
+  0% {
+    top: -20%;
+  }
+  100% {
+    top: 120%;
+  }
+}
+
+/* Iridescent blue foil for text/gradients */
+.iridescent-text {
+  background: linear-gradient(115deg, #0044ff 0%, #00e5ff 50%, #0044ff 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: foil-shift 6s ease-in-out infinite;
+}
+
+@keyframes foil-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.terminal-cursor::after {
+  content: "▊";
+  margin-left: 2px;
+  animation: blink 1s steps(1) infinite;
+  color: #00e5ff;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Paper-slip subtle texture */
+.paper-slip {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0)),
+    #000000;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 24px 60px -24px rgba(0, 229, 255, 0.18);
+}

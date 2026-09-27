@@ -1,0 +1,34 @@
+Copy and paste this master prompt directly into your AI coding assistant or IDE to vibe-code the platform.
+
+**System Role & Architecture**
+Build an interactive Next.js WebGL application using React Three Fiber, Framer Motion, and Tailwind CSS. The app is a spatial narrative quiz and 3D token generator called "The Instinct Series."
+
+**Visual Identity & Design System**
+
+* **Aesthetic:** "Techno-Romanticism." A fusion of retro-industrial hardware and high-end holographic artifacts.
+* **Colors:** Pitch black background (`#000000`). UI elements should be monochrome (stark white and varying grays), with hyper-saturated iridescent blue (`#0044FF` to `#00E5FF`) used exclusively for the holographic foil effects.
+* **Typography:** Use a strict monospace font (e.g., Space Mono or JetBrains Mono) for UI elements, tags, and buttons to mimic an LED dot-matrix screen. Use a sharp, high-contrast serif font for the main narrative text and questions.
+* **FX:** Overlay the entire background with a subtle, animated CSS scanline or LED dot-matrix grid shader.
+
+**Core User Flow & Components**
+
+**1. The Scenario Terminal (Quiz UI)**
+
+* Do not use standard radio buttons or form fields. Display questions as centered, terminal-style prompts or physical-looking digital "paper slips."
+* Implement 3-4 scenario questions focusing on organizational survival (e.g., "Market liquidity drops 80%. What is your immediate protocol?").
+* Use Framer Motion to animate the transition between questions with a slow, cinematic fade.
+
+**2. The 3D Instinct Coin Renderer (The Reveal)**
+
+* When the quiz completes, aggregate the score to determine one of four archetypes: Cockroach (Resilience), Bull (Momentum), Unicorn (Hyper-Growth), or Chameleon (Reinvention).
+* Mount a `Canvas` from React Three Fiber in the center of the screen.
+* Render a 3D metallic coin. Include an interactive shader that reacts to the mouse: the coin should initially render as a glowing, low-res LED dot-matrix hologram, then seamlessly transition into a highly realistic, silver-and-iridescent-blue metallic texture.
+
+**3. The Founder Passport (Output)**
+
+* Below the 3D coin, render a clean, minimalist "Instinct Card."
+* Include the Archetype title, its specific organizational trait (e.g., "Instinct 01: Built for storms and the raw refusal to quit"), and a dynamic QR code component.
+* Add two primary action buttons: "Download Diagnostics (PDF)" and "Export Token (.STL)".
+
+**Behavioral Constraints**
+Ensure the WebGL canvas is highly optimized. Do not use external image assets for the UI; rely on CSS gradients, SVG line art, and programmatic shaders for the dot-matrix and holographic effects.
